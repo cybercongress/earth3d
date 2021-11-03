@@ -112,7 +112,7 @@ let wsUrl = "wss://rpc.bostrom.cybernode.ai/websocket";
 // let wsUrl = "ws://localhost:26657/websocket";
 let wsClient = null;
 let timeReConnectWS = 3000;
-let timechatHeartBlock = 0;
+let chatHeartBlockStatus = null;
 
 const closeHandler = () => {
   console.log(`close WS`);
@@ -146,13 +146,13 @@ const handlerMessage = (evt) => {
       numTxs,
     };
 
-    // if (parseFloat(height) >= 6) {
-    //   closeWsfnc()
+    if (chatHeartBlockStatus) {
+      chatHeartBlockFnc(dataBlockInfo);
+    }
 
-    // } else {
-    chatHeartBlockFnc(dataBlockInfo);
-
-    // }
+    if (!chatHeartBlockStatus) {
+      closeWsfnc();
+    } 
   }
 };
 
@@ -179,7 +179,7 @@ const createConnect = () => {
     listenNewBlock();
   }
 };
-createConnect();
+// createConnect();
 
 const visibilityHidden = () => {
   document.querySelector("#chatHeartBlock").style.visibility = "hidden";
@@ -188,7 +188,6 @@ const visibilityHidden = () => {
 
 const chatHeartBlockFnc = (dataBlockInfo) => {
   const { height, blockTime, blockHash, numTxs } = dataBlockInfo;
-  console.log(`timechatHeartBlock`, timechatHeartBlock.time());
   document.querySelector("#height").innerText = `Height: ${height}`;
   document.querySelector("#blockTime").innerText = `Block Time: ${blockTime}`;
   document.querySelector("#blockHash").innerText = `Block Hash: ${blockHash}`;
@@ -206,6 +205,10 @@ const closeWsfnc = () => {
     wsClient.close();
     console.log(`close WS closeWsfnc`);
   }
+};
+
+const chatHeartBlockStatusFnc = (status) => {
+    chatHeartBlockStatus = status;
 };
 
 
@@ -1323,12 +1326,15 @@ window.addEventListener("load",function () {
             .to(".chatItWorks .content",{duration:1,width:"0%",ease:"back.out(1)"},">")
             .to(".chatItWorks",{autoAlpha:0},"<")
 
-            ///////chatHeartBlockFnc
-            // .call(()=>{chatHeartBlockFnc(true)},null,0)
-            // .call(()=>{chatHeartBlockFnc(true)},null,4.5)
-            // .call(()=>{chatHeartBlockFnc(true)},null,10)
-            // .call(()=>{chatHeartBlockFnc(true)},null,15)
-            // .call(()=>{chatHeartBlockFnc(true)},null,20)
+            /////chatHeartBlockFnc
+            .call(()=>{createConnect();},null,0)
+            .call(()=>{chatHeartBlockStatusFnc(true);},null,0)
+            .call(()=>{chatHeartBlockStatusFnc(true);},null,4.5)
+            .call(()=>{chatHeartBlockStatusFnc(true);},null,10)
+            .call(()=>{chatHeartBlockStatusFnc(true);},null,15)
+            .call(()=>{chatHeartBlockStatusFnc(true);},null,20)
+            .call(()=>{chatHeartBlockStatusFnc(false);},null,25)
+
 
         /**
          * presentationTl
