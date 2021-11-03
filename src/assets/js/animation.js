@@ -69,7 +69,8 @@ import {textForAnimation} from "@assets/js/text_for_animation.js"
 
 
 // let genesisDate = "Nov 05, 2021 13:45:00"
-let genesisDate = '2021-11-05T13:00:00Z';
+let genesisDate = '2021-11-03T14:00:00Z';
+
 let timerInterval
 
 function timerEnd() {
@@ -110,7 +111,8 @@ timerEnd()
 let wsUrl = "wss://rpc.bostrom.cybernode.ai/websocket";
 // let wsUrl = "ws://localhost:26657/websocket";
 let wsClient = null;
-let timeReConnectWS = 1000;
+let timeReConnectWS = 3000;
+let timechatHeartBlock = 0;
 
 const closeHandler = () => {
   console.log(`close WS`);
@@ -179,14 +181,23 @@ const createConnect = () => {
 };
 createConnect();
 
+const visibilityHidden = () => {
+  document.querySelector("#chatHeartBlock").style.visibility = "hidden";
+  document.querySelector("#chatHeartBlock").style.opacity = "0";
+};
+
 const chatHeartBlockFnc = (dataBlockInfo) => {
   const { height, blockTime, blockHash, numTxs } = dataBlockInfo;
+  console.log(`timechatHeartBlock`, timechatHeartBlock.time());
   document.querySelector("#height").innerText = `Height: ${height}`;
   document.querySelector("#blockTime").innerText = `Block Time: ${blockTime}`;
   document.querySelector("#blockHash").innerText = `Block Hash: ${blockHash}`;
   document.querySelector(
     "#numTxs"
   ).innerText = `Number Of Transactions: ${numTxs}`;
+  document.querySelector("#chatHeartBlock").style.visibility = "inherit";
+  document.querySelector("#chatHeartBlock").style.opacity = "1";
+  setTimeout(visibilityHidden, 2000);
 };
 
 const closeWsfnc = () => {
