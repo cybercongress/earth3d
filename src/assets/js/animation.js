@@ -204,6 +204,7 @@ const closeWsfnc = () => {
     wsClient.removeEventListener("close", closeHandler);
     wsClient.close();
     console.log(`close WS closeWsfnc`);
+    chatHeartBlockStatus = null;
   }
 };
 
@@ -211,6 +212,9 @@ const chatHeartBlockStatusFnc = (status) => {
     chatHeartBlockStatus = status;
 };
 
+const endmovieFnc = () => {
+  window.parent.postMessage("endStatusMovie", "*");
+};
 
 
 // if ( WEBGL.isWebGL2Available() === false ){document.body.appendChild( "<div class='errorWebGl'>" + WEBGL.getWebGL2ErrorMessage() + "</div>" );}
@@ -1329,10 +1333,6 @@ window.addEventListener("load",function () {
             /////chatHeartBlockFnc
             .call(()=>{createConnect();},null,0)
             .call(()=>{chatHeartBlockStatusFnc(true);},null,0)
-            .call(()=>{chatHeartBlockStatusFnc(true);},null,4.5)
-            .call(()=>{chatHeartBlockStatusFnc(true);},null,10)
-            .call(()=>{chatHeartBlockStatusFnc(true);},null,15)
-            .call(()=>{chatHeartBlockStatusFnc(true);},null,20)
             .call(()=>{chatHeartBlockStatusFnc(false);},null,25)
 
 
@@ -1430,6 +1430,7 @@ window.addEventListener("load",function () {
 
                 ,"qq")
             .to(".endTitle",{duration:5,autoAlpha:0},">-5")
+            .call(()=>{endmovieFnc(true);},null,230)
 
 
         /**
