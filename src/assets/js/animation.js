@@ -68,10 +68,7 @@ import videoHowInstall from "@assets/media/genesis-video.mp4"
 
 import {textForAnimation} from "@assets/js/text_for_animation.js"
 
-
-
-// let genesisDate = "Nov 05, 2021 13:45:00"
-// let genesisDate = '2021-11-05T13:00:00Z';
+// let genesisDate = '2021-11-05T13:01:15Z';
 let mainTl
 let genesisDate = Date.parse(new Date(new Date().getTime()+1.3*60000).toUTCString());
 
