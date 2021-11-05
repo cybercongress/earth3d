@@ -71,8 +71,8 @@ import {textForAnimation} from "@assets/js/text_for_animation.js"
 
 
 // let genesisDate = "Nov 05, 2021 13:45:00"
-
-// let genesisDate = '2021-11-05T13:00:00Z'; 
+// let genesisDate = '2021-11-05T13:00:00Z';
+let mainTl
 let genesisDate = Date.parse(new Date(new Date().getTime()+1.3*60000).toUTCString());
 
 let timerInterval
@@ -101,6 +101,18 @@ function timerEnd() {
         document.querySelectorAll('.timer_container').forEach(item => {
             item.innerText = `${days} : ${hours} : ${minutes} : ${seconds}`
         })
+
+        // if(distance == 60000){
+        //     gsap.timeline()
+        //         .to(".startScreen #genesis",{duration:1,autoAlpha:0})
+        //         .to(".startScreen",{duration:1,backgroundColor:"rgba(0,0,0,0)"},">")
+        //         .to(".btn-home",{duration:1,autoAlpha:1},"<")
+        //         .to(".startScreen svg",{duration:1,y:"-20%",ease:"sine.inOut"},"<")
+        // }
+        if (distance <= 0) {
+            clearInterval(timerInterval);
+            mainTl.restart()
+        }
     }
 
     changeTime()
@@ -235,8 +247,7 @@ window.addEventListener("load",function () {
         fov = 45,
         planeAspectRatio = 16 / 9;
 
-    let mainTl,
-        gsapParam = {},
+    let gsapParam = {},
         textTl;
 
     let earth,
@@ -1619,14 +1630,7 @@ window.addEventListener("load",function () {
 
         document.querySelector(".btn-home").addEventListener("mousedown",function () {
             startScreenTl.restart()
-
-            // for test
-            document.body.addEventListener("dblclick",function () {
-                // for start main animation
-                mainTl.restart()
-            })
         })
-
     }
 
 })
