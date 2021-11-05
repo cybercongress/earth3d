@@ -71,7 +71,7 @@ import {textForAnimation} from "@assets/js/text_for_animation.js"
 
 // let genesisDate = "Nov 05, 2021 13:45:00"
 
-// let genesisDate = '2021-11-05T13:00:00Z';
+// let genesisDate = '2021-11-05T13:00:00Z'; 
 let genesisDate = Date.parse(new Date(new Date().getTime()+1.3*60000).toUTCString());
 
 let timerInterval
@@ -107,6 +107,7 @@ function timerEnd() {
                 .to(".startScreen",{duration:1,backgroundColor:"rgba(0,0,0,0)"},">")
                 .to(".btn-home",{duration:1,autoAlpha:1},"<")
                 .to(".startScreen svg",{duration:1,y:"-20%",ease:"sine.inOut"},"<")
+                .to(".betterExperience", {duration:1,autoAlpha:0, display:"none"})
         }
         if (distance <= 0) {
             clearInterval(timerInterval);
