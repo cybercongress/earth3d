@@ -68,9 +68,9 @@ import videoHowInstall from "@assets/media/genesis-video.mp4"
 
 import {textForAnimation} from "@assets/js/text_for_animation.js"
 
-// let genesisDate = '2021-11-05T13:01:15Z';
+let genesisDate = '2021-11-05T13:01:15Z';
 let mainTl
-let genesisDate = Date.parse(new Date(new Date().getTime()+1.3*60000).toUTCString());
+// let genesisDate = Date.parse(new Date(new Date().getTime()+1.3*60000).toUTCString());
 
 let timerInterval
 
@@ -118,7 +118,6 @@ function timerEnd() {
 timerEnd()
 
 let wsUrl = "wss://rpc.bostrom.cybernode.ai/websocket";
-// let wsUrl = "ws://localhost:26657/websocket";
 let wsClient = null;
 let timeReConnectWS = 3000;
 let chatHeartBlockStatus = null;
