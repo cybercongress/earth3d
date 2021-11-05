@@ -1453,6 +1453,7 @@ window.addEventListener("load",function () {
             .set(".text-wrapper",{opacity:0,y:10})
             // .to(".btn-home",{duration:0.5,autoAlpha:0})
             .to(".startScreen",{duration:1,autoAlpha:0,display:"none"},"<")
+            .to(".launchIsActivated", { duration: 1, autoAlpha: 0, display: "none" })
             .to(".gs-dev-tools",{duration:1,autoAlpha:1,y:"-100%"},"<")
 
             .add(starWarsTl.restart())

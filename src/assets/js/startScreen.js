@@ -581,9 +581,12 @@ if (containerStartScreen) {
 ////////////////////////////
 ////////////////////////////
 ////////////////////////////
-const startScreenTl =gsap.timeline({paused:true})
-    .set('.startScreen svg', {autoAlpha: 1})
-    .to(".launch-btn-wrapper",{autoAlpha:0})
+const startScreenTl = gsap
+  .timeline({ paused: true })
+  .set(".startScreen svg", { autoAlpha: 1 })
+  .to(".launch-btn-wrapper", { autoAlpha: 0 })
+  .to(".betterExperience", { duration: 1, autoAlpha: 0, display: "none" })
+  .to(".launchIsActivated", { duration: 1, autoAlpha: 1 });
 
 gsap.set('#gD, #geD > *', {scale: 0, transformOrigin: 'center'})
 gsap.set('#gL > *', {strokeDasharray: 1496, strokeDashoffset: 1496})
