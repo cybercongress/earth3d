@@ -3,6 +3,7 @@ import { gsap } from "gsap/all";
 import GSDevTools from "@assets/js/dtgsap.min.js"
 import {typeAnim} from "@assets/js/typeAnim"
 import { slideAnimation } from "@assets/js/slideAnimation";
+import  startScreenTl from "@assets/js/startScreen";
 import { WEBGL } from 'three/examples/jsm/WebGL.js';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader'
 import { Flow  } from "three/examples/jsm/modifiers/CurveModifier";
@@ -13,7 +14,7 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import Stats from 'three/examples/jsm/libs/stats.module'
+// import Stats from 'three/examples/jsm/libs/stats.module'
 
 /**
  * shader
@@ -61,15 +62,16 @@ import sunTextureImg from '@assets/img/sunShine.jpg'
 
 // import audioStoryMP3 from "@assets/media/Genesis_full_mix2_100VBR.mp3"
 // import audioStoryMP3 from "@assets/media/scenario-v2.7.mp3"
-import audioStoryMP3 from "@assets/media/scenario-final.mp3"
+// import audioStoryMP3 from "@assets/media/scenario-final.mp3"
+import audioStoryMP3 from "@assets/media/Genesis_full_mix6(plus-50sec).mp3"
 import videoHowInstall from "@assets/media/genesis-video.mp4"
 
 import {textForAnimation} from "@assets/js/text_for_animation.js"
 
+// let genesisDate = '2021-11-05T13:01:15Z';
+let mainTl
+let genesisDate = Date.parse(new Date(new Date().getTime()+1.3*60000).toUTCString());
 
-
-// let genesisDate = "Nov 05, 2021 13:45:00"
-let genesisDate = '2021-11-05T13:00:00Z';
 let timerInterval
 
 function timerEnd() {
@@ -97,9 +99,17 @@ function timerEnd() {
             item.innerText = `${days} : ${hours} : ${minutes} : ${seconds}`
         })
 
-        // if (distance < 0) {
-        //     clearInterval(timerInterval);
+        // if(distance == 60000){
+        //     gsap.timeline()
+        //         .to(".startScreen #genesis",{duration:1,autoAlpha:0})
+        //         .to(".startScreen",{duration:1,backgroundColor:"rgba(0,0,0,0)"},">")
+        //         .to(".btn-home",{duration:1,autoAlpha:1},"<")
+        //         .to(".startScreen svg",{duration:1,y:"-20%",ease:"sine.inOut"},"<")
         // }
+        if (distance <= 0) {
+            clearInterval(timerInterval);
+            mainTl.restart()
+        }
     }
 
     changeTime()
@@ -110,7 +120,8 @@ timerEnd()
 let wsUrl = "wss://rpc.bostrom.cybernode.ai/websocket";
 // let wsUrl = "ws://localhost:26657/websocket";
 let wsClient = null;
-let timeReConnectWS = 1000;
+let timeReConnectWS = 3000;
+let chatHeartBlockStatus = null;
 
 const closeHandler = () => {
   console.log(`close WS`);
@@ -144,13 +155,13 @@ const handlerMessage = (evt) => {
       numTxs,
     };
 
-    // if (parseFloat(height) >= 6) {
-    //   closeWsfnc()
+    if (chatHeartBlockStatus) {
+      chatHeartBlockFnc(dataBlockInfo);
+    }
 
-    // } else {
-    chatHeartBlockFnc(dataBlockInfo);
-
-    // }
+    if (!chatHeartBlockStatus) {
+      closeWsfnc();
+    } 
   }
 };
 
@@ -177,7 +188,12 @@ const createConnect = () => {
     listenNewBlock();
   }
 };
-createConnect();
+// createConnect();
+
+const visibilityHidden = () => {
+  document.querySelector("#chatHeartBlock").style.visibility = "hidden";
+  document.querySelector("#chatHeartBlock").style.opacity = "0";
+};
 
 const chatHeartBlockFnc = (dataBlockInfo) => {
   const { height, blockTime, blockHash, numTxs } = dataBlockInfo;
@@ -187,6 +203,9 @@ const chatHeartBlockFnc = (dataBlockInfo) => {
   document.querySelector(
     "#numTxs"
   ).innerText = `Number Of Transactions: ${numTxs}`;
+  document.querySelector("#chatHeartBlock").style.visibility = "inherit";
+  document.querySelector("#chatHeartBlock").style.opacity = "1";
+  setTimeout(visibilityHidden, 2000);
 };
 
 const closeWsfnc = () => {
@@ -194,9 +213,17 @@ const closeWsfnc = () => {
     wsClient.removeEventListener("close", closeHandler);
     wsClient.close();
     console.log(`close WS closeWsfnc`);
+    chatHeartBlockStatus = null;
   }
 };
 
+const chatHeartBlockStatusFnc = (status) => {
+    chatHeartBlockStatus = status;
+};
+
+const endmovieFnc = () => {
+  window.parent.postMessage("endStatusMovie", "*");
+};
 
 
 // if ( WEBGL.isWebGL2Available() === false ){document.body.appendChild( "<div class='errorWebGl'>" + WEBGL.getWebGL2ErrorMessage() + "</div>" );}
@@ -217,8 +244,7 @@ window.addEventListener("load",function () {
         fov = 45,
         planeAspectRatio = 16 / 9;
 
-    let mainTl,
-        gsapParam = {},
+    let gsapParam = {},
         textTl;
 
     let earth,
@@ -386,9 +412,8 @@ window.addEventListener("load",function () {
         // const controls = new OrbitControls( camera, renderer.domElement );
         // controls.update();
 
-        // if(window.location.hostname == "localhost"){}
-        stats = Stats()
-        document.body.appendChild(stats.dom)
+        // stats = Stats()
+        // document.body.appendChild(stats.dom)
 
         function animate() {
 
@@ -621,7 +646,7 @@ window.addEventListener("load",function () {
                     {
                         lightIntensity: {type: 'f', value: 1.0  },
                         earthShineTexture:{type: "t",value: null },
-                        colorDefault: {type:"vec4", value: new THREE.Vector4(0.019,1.0,1.0)},
+                        colorDefault: {type:"vec4", value: new THREE.Vector4(0.0,1.0,0.0, 1.0)},
                         time: {type: "f",value: 0 },
                     }
                 ]),
@@ -733,7 +758,7 @@ window.addEventListener("load",function () {
                     child.material = newMaterial;
                 }
                 if ( child.isMesh ) {
-                    child.castShadow = true;
+                    // child.castShadow = true;
                     child.receiveShadow = true;
                     child.material.side = THREE.DoubleSide
                     child.material.transparent = true
@@ -1068,11 +1093,11 @@ window.addEventListener("load",function () {
 
         ///////////
         let earthRedVirusTl = gsap.timeline({paused:true})
-            .to(earth.material.uniforms.earthVirusPercent,{duration:10,value:1, ease:"sine.inOut"})
+            .to(earth.material.uniforms.earthVirusPercent,{duration:10,value:1, ease:"none"})
 
         ///////////
         let earthGreenVirusTl = gsap.timeline({paused:true})
-            .to(earth.material.uniforms.earthGreenVirusPercent,{duration:10,value:1, ease:"sine.inOut"})
+            .to(earth.material.uniforms.earthGreenVirusPercent,{duration:10,value:1, ease:"none"})
 
         ///////////
         let earthCoinAnimTl = logoCompanyAnim(6,100,coinTextureImg,(earthTextAnim.labels["goSomewhereE"] - earthTextAnim.labels["earthCoinAnimS"]))
@@ -1094,7 +1119,7 @@ window.addEventListener("load",function () {
 
             .add(earthTextAnim.restart())
 
-            .to(earthAnimRed,{duration:(earthTextAnim.labels["animRedMarsE"]-earthTextAnim.labels["animRedMarsS"]),progress:1,ease:"none"},earthTextAnim.labels["animRedMarsS"])
+            // .to(earthAnimRed,{duration:(earthTextAnim.labels["animRedMarsE"]-earthTextAnim.labels["animRedMarsS"]),progress:1,ease:"none"},earthTextAnim.labels["animRedMarsS"])
             .add(earthCountryAnimTl.restart(),earthTextAnim.labels["animCountryS"])
             .to(earthFrameTl,{duration:(earthTextAnim.labels["animEarthFrameE"]-earthTextAnim.labels["animEarthFrameS"]),progress:1,ease:"none"},earthTextAnim.labels["animEarthFrameS"])
             .to(earthGlitchTl,{duration:(earthTextAnim.labels["animEarthGlitchE"]-earthTextAnim.labels["animEarthGlitchS"]),progress:1,ease:"none"},earthTextAnim.labels["animEarthGlitchS"])
@@ -1105,10 +1130,10 @@ window.addEventListener("load",function () {
             .to(earthAnimRed,{duration:(earthTextAnim.labels["WorldWarE"]-earthTextAnim.labels["WorldWarS"]),progress:0,ease:"none"},earthTextAnim.labels["WorldWarS"])
             ////
             .to(earthRedVirusTl,{duration:(earthTextAnim.labels["earthRedVirusE"]-earthTextAnim.labels["earthRedVirusS"]),progress:1,ease:"none"},earthTextAnim.labels["earthRedVirusS"])
-            .to(earthGreenVirusTl,{duration:(earthTextAnim.labels["earthGreenVirusE"]-earthTextAnim.labels["earthGreenVirusS"]),progress:1,ease:"none"},earthTextAnim.labels["earthGreenVirusS"])
+            .to(earthGreenVirusTl,{duration:(earthTextAnim.labels["earthGreenVirusE"]+30-earthTextAnim.labels["WorldWarS"]),progress:1,ease:"none"},earthTextAnim.labels["WorldWarS"])
             ////
             .add(earthCoinAnimTl.restart(),earthTextAnim.labels["earthCoinAnimS"])
-            .to(earthNetworkTl,{duration:(earthTextAnim.labels["goSomewhereE"]-earthTextAnim.labels["earthNetworkS"]),progress:1,ease:"none"},earthTextAnim.labels["earthNetworkS"])
+            // .to(earthNetworkTl,{duration:(earthTextAnim.labels["goSomewhereE"]-earthTextAnim.labels["earthNetworkS"]),progress:1,ease:"none"},earthTextAnim.labels["earthNetworkS"])
 
             .to(earthShineTl,{duration:(earthTextAnim.labels["manifestAnimE"]-earthTextAnim.labels["goSomewhereS"]),progress:1,ease:"none"},earthTextAnim.labels["goSomewhereS"])
 
@@ -1293,18 +1318,15 @@ window.addEventListener("load",function () {
                 gsap.timeline()
                     .to(audioStory,{duration:0.01,progress:(21*60+6.2)})
                     .to(audioStory.id,{duration:0.01,attr:{"data-play": true},volume:1,currentTime:(21*60+6.2)},"<")
-                    .to(audioStory,{duration:(21*60+17.1)-(21*60+6.2),progress:(21*60+17.1),ease:"none"},">")
+                    .to(audioStory,{duration:(22*60+7.1)-(21*60+6.2),progress:(22*60+7.1),ease:"none"},">")
                     // .to(audioStory.id,{duration:2,volume:0.2},">-10")
                     .to(audioStory.id,{duration:0.01,attr:{"data-play": false},volume:0},">")
 
 
                 ,0)
-            .to(".chatHeartBlock",{autoAlpha:1,repeat:1,yoyo:true,ease:'back.out(1)'},0)
-            .to(".chatHeartBlock",{autoAlpha:1,repeat:1,yoyo:true,ease:'back.out(1)'},4.5)
-            .set(".chatHeartBlock .content",{left:"10%",right:"initial"},9.8)
-            .to(".chatHeartBlock",{autoAlpha:1,repeat:1,yoyo:true,ease:'back.out(1)'},10)
 
-            .to(".chatItWorks",{autoAlpha:1},">+1")
+
+            .to(".chatItWorks",{autoAlpha:1},61.5)
             .from(".chatItWorks .content",{duration:1,width:"0%",ease:"back.out(1)"},">")
             .from(".chatItWorks .content",{duration:1,opacity:0,ease:"none"},"<")
 
@@ -1315,10 +1337,10 @@ window.addEventListener("load",function () {
             .to(".chatItWorks .content",{duration:1,width:"0%",ease:"back.out(1)"},">")
             .to(".chatItWorks",{autoAlpha:0},"<")
 
-            .set(".chatHeartBlock .content",{left:"initial",right:"10%"},14.8)
-            .to(".chatHeartBlock",{autoAlpha:1,repeat:1,yoyo:true,ease:'back.out(1)'},15)
-            .to(".chatHeartBlock",{autoAlpha:1,repeat:1,yoyo:true,ease:'back.out(1)'},20)
-
+            /////chatHeartBlockFnc
+            .call(()=>{createConnect();},null,0)
+            .call(()=>{chatHeartBlockStatusFnc(true);},null,0)
+            .call(()=>{chatHeartBlockStatusFnc(false);},null,25)
 
         /**
          * presentationTl
@@ -1351,8 +1373,6 @@ window.addEventListener("load",function () {
                     .to(videoStory,{duration:35,progress:35,ease:"none"},">")
                     // .to(videoStory.id,{duration:2,volume:0.2},">-10")
                     .to(videoStory.id,{duration:0.01,attr:{"data-play": false},volume:0},">")
-
-
                 ,"startPres")
             .to(".videoHowInstall",{duration:2,scale:0,transformOrigin:"50% 50%"},">+2")
             .to(".videoHowInstall",{duration:2,borderRadius:"100%",transformOrigin:"50% 50%"},"<")
@@ -1377,7 +1397,7 @@ window.addEventListener("load",function () {
                     .add(
                         gsap.timeline()
                             .to(cameraTarget.position,{duration:2,x:13,y:0,z:0,ease:"sine.inOut"},"<")
-                            .to(camera.position,{duration:2,x:-1.5,y:0,z:16,ease:"sine.inOut"},"<")
+                            .to(camera.position,{duration:2,x:-5,y:0,z:22,ease:"sine.inOut"},"<")
                             .to(cameraTarget.position,{duration:2,x:19,y:0,z:0,ease:"sine.inOut"},">+36")
                             .to(camera.position,{duration:2,x:-1.5,y:0,z:20,ease:"sine.inOut"},"<")
                             .duration(slideChatTl.labels["slide9E"]-slideChatTl.labels["slide9S"])
@@ -1386,7 +1406,7 @@ window.addEventListener("load",function () {
         }
         presentationTl
             .to(".smartapeMonkey",{duration:2,y:"100%",ease:"back.out(1.5)"},">")
-            .to(".smartapePresentation",{duration:1,autoAlpha:0})
+            .to(".smartapePresentation",{duration:1,autoAlpha:0},"<")
 
 
 
@@ -1397,23 +1417,31 @@ window.addEventListener("load",function () {
         /**
          * endTitleTl
          */
-        // let endTitleDuration = document.querySelector(".endTitle .content").offsetHeight / 50
+        let endTitleHeight = document.querySelector(".endTitle .content").offsetHeight + window.innerHeight
+        let endTitleS = 35*60+8.05;
+        let endTitleE = 38*60+56;
+        let endTitleD = endTitleE - endTitleS
+
         let endTitleTl = gsap.timeline({paused:true})
             .to(".endTitle",{autoAlpha:1},"qq")
-            .to(".endTitle .content",{duration:228,y:"-100%",ease:"none"},"<")
+            .to(".endTitle .content",{duration:endTitleD,y:-endTitleHeight,ease:"none"},"<")
             .to(".endTitle .content",{duration:3,opacity:0,ease:"sine.out"},">-3")
             .add(
                 gsap.timeline()
-                    .to(audioStory,{duration:0.01,progress:2059})
-                    .to(audioStory.id,{duration:0.01,attr:{"data-play": true},volume:0,currentTime:2059},"<")
-                    .to(audioStory.id,{duration:3,volume:1},">")
-                    .to(audioStory,{duration:228,progress:2059 + 228,ease:"none"},"<")
+                    .to(audioStory,{duration:0.01,progress:endTitleS})
+                    .to(audioStory.id,{duration:0.01,attr:{"data-play": true},volume:1,currentTime:endTitleS},"<")
+                    .to(audioStory.id,{duration:3,onUpdate:function () {
+                            audioStory.id.volume = 1
+                            audioStory.id.setAttribute("data-play","true");
+                        }},"<")
+                    .to(audioStory,{duration:endTitleD,progress:endTitleE,ease:"none"},"<")
                     // .to(audioStory.id,{duration:2,volume:0.2},">-10")
                     .to(audioStory.id,{duration:0.01,attr:{"data-play": false},volume:0},">")
 
 
                 ,"qq")
             .to(".endTitle",{duration:5,autoAlpha:0},">-5")
+            .call(()=>{endmovieFnc(true);},null,230)
 
 
         /**
@@ -1424,16 +1452,18 @@ window.addEventListener("load",function () {
          */
 
         cameraTarget.position.set(0,500,0)
-        // console.log(arrTextAnim["subtitleEarth"].labels)
+        gsap.set(".timerEnd",{top:"-10%",fontSize:10,scale:0.5,autoAlpha:0,transformOrigin:"50% 50%"})
 
         mainTl = gsap.timeline({id:"mainTl",paused:true,onStart:()=>{
                 document.body.classList.add("animEarthStart");
             } })
 
             .set(".text-wrapper",{opacity:0,y:10})
-            .to(".btn-home",{duration:0.5,autoAlpha:0})
-            .to(".timerEnd",{duration:0.1,top:"-10%",fontSize:10,scale:0.5,autoAlpha:0,transformOrigin:"50% 50%",ease:"sine.inOut"},"<")
+            // .to(".btn-home",{duration:0.5,autoAlpha:0})
             .to(".startScreen",{duration:1,autoAlpha:0,display:"none"},"<")
+            .to(".launchIsActivated", { duration: 1, autoAlpha: 0, display: "none" })
+            .to(".gs-dev-tools",{duration:1,autoAlpha:1,y:"-100%"},"<")
+
             .add(starWarsTl.restart())
             .add(chatAfterStoryTl.restart(),">-2")
 
@@ -1453,7 +1483,7 @@ window.addEventListener("load",function () {
 
         timeRotate = chatAfterManifest.duration()
         mainTl
-            .add(chatAfterManifest.restart(),"endManifest+=1")
+            .add(chatAfterManifest.restart(),"endManifest")
             .to(moonWrap.rotation,{duration:timeRotate,y:"+=-"+THREE.MathUtils.degToRad(360*timeRotate/120),ease:"none"},"<")
             .to(earth.rotation,{duration:timeRotate,y:"+="+THREE.MathUtils.degToRad(360*timeRotate/60),ease:"none"},"<")
 
@@ -1474,7 +1504,7 @@ window.addEventListener("load",function () {
 
         timeRotate = chatCheckDodecadronTl.duration()+2
         mainTl
-            .to(moonWrap.rotation,{duration:timeRotate,y:"+=-"+THREE.MathUtils.degToRad(360*timeRotate/120*(720/(360*timeRotate/120))),ease:"none"},"<")
+            .to(moonWrap.rotation,{duration:timeRotate,y:"+=-"+THREE.MathUtils.degToRad(360*timeRotate/120*(720/(360*timeRotate/120))),ease:"none"},"<-1")
             .to(earth.rotation,{duration:timeRotate,y:"+="+THREE.MathUtils.degToRad(360*timeRotate/60*(720/(360*timeRotate/120))),ease:"none"},"<")
             .to(cameraWrapper.rotation,{duration:timeRotate,y:"+="+THREE.MathUtils.degToRad(360*timeRotate/120*(720/(360*timeRotate/120))),ease:"none"},"<")
             .add(chatCheckDodecadronTl.restart(),"<+3")
@@ -1498,14 +1528,18 @@ window.addEventListener("load",function () {
         mainTl
             .to(moonWrap.rotation,{duration:timeRotate,y:"+=-"+THREE.MathUtils.degToRad(360*timeRotate/120),ease:"none"},"endPlanetParad")
             .to(earth.rotation,{duration:timeRotate,y:"+="+THREE.MathUtils.degToRad(360*timeRotate/60),ease:"none"},"<")
-            .to(cameraWrapper.rotation,{duration:timeRotate-16,y:"+="+THREE.MathUtils.degToRad(360*(timeRotate-16)/120),ease:"none"},"endPlanetParad+=15")
+            .to(cameraWrapper.rotation,{duration:70,y:"+=-"+THREE.MathUtils.degToRad(180),ease:"sine.inOut"},"endPlanetParad")
+            // .to(cameraWrapper.rotation,{duration:timeRotate-16,y:"+="+THREE.MathUtils.degToRad(360*(timeRotate-16)/120),ease:"none"},"endPlanetParad+=15")
             .add(chatItWorksTl.restart(),"endPlanetParad")
 
             .to(".header",{duration:1,autoAlpha:1},"<+5")
-            .to(cameraTarget.position,{duration:15,x:19,y:0,z:0,ease:"sine.inOut"},"<")
-            .to(camera.position,{duration:15,x:-1.5,y:0,z:20,ease:"sine.inOut"},"<+3")
+            .to(cameraTarget.position,{duration:15,x:7.5,y:0,z:0,ease:"sine.inOut"},"<")
 
-        timeRotate = presentationTl.duration()+endTitleTl.duration()+1
+            .to(cameraWrapper.rotation,{duration:timeRotate-70,y:"+="+THREE.MathUtils.degToRad(360*(timeRotate-70)/120),ease:"sine.in"},"endPlanetParad+=70")
+            .to(cameraTarget.position,{duration:5,x:19,y:0,z:0,ease:"sine.inOut"},">-8")
+            .to(camera.position,{duration:5,x:-1.5,y:0,z:20,ease:"sine.inOut"},"<")
+
+        timeRotate = presentationTl.duration()+endTitleTl.duration()-2.5
         mainTl
             .to(moonWrap.rotation,{duration:timeRotate,y:"+=-"+THREE.MathUtils.degToRad(360*timeRotate/120),ease:"none"},"-=1")
             .to(earth.rotation,{duration:timeRotate,y:"+="+THREE.MathUtils.degToRad(360*timeRotate/60),ease:"none"},"<")
@@ -1513,7 +1547,7 @@ window.addEventListener("load",function () {
 
             .add(presentationTl.restart(),"<-1")
 
-            .add(endTitleTl.restart(),">")
+            .add(endTitleTl.restart(),">-2")
             .to(".wrapper-animation > *",{duration:1,autoAlpha:0},">")
 
         ////////////////////////////
@@ -1581,16 +1615,19 @@ window.addEventListener("load",function () {
         document.addEventListener("keypress",firstLoadAudio)
 
 
-        document.querySelector(".btn-home").addEventListener("mousedown",function () {
-            mainTl.restart()
-        })
-
-
         if(window.location.hostname != "localhost")
             GSDevTools.create({animation:"mainTl",hideGlobalTimeline:true,timeScale:1,visibility:"auto",persist: false,inTime:0});
         else
             GSDevTools.create({animation:"mainTl",hideGlobalTimeline:true,timeScale:1,visibility:"auto",persist: false,inTime:0});
 
+        //////////
+        // first start
+        gsap.timeline()
+            .to(".btn-home",{duration:1,autoAlpha:1},"<")
+
+        document.querySelector(".btn-home").addEventListener("mousedown",function () {
+            startScreenTl.restart()
+        })
     }
 
 })

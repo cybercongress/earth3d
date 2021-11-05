@@ -10,21 +10,21 @@
 </head>
 <body>
 
-<div class="header">
-    <div class="header-container">
-        <div class="header-talking header-talking-outline">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                 viewBox="0 0 64.3 65.9" enable-background="new 0 0 64.3 65.9" xml:space="preserve">
-                <g id="ctg-talking">
-                    <path fill="none" stroke="#7AFAA1" d="M13.4,63.4c0,0,14.9-6.1,29.4-21.6c14.5-15.5,19.1-30.3,19.1-30.3"/>
-                    <path fill="none" stroke="#7AFAA1" d="M10.4,46.1c0,0,10-4.6,21.1-16.5C42.6,17.7,45.6,8.5,45.6,8.5"/>
-                    <path fill="none" stroke="#7AFAA1" d="M8.4,26.5c0,0,5.2-1.6,10.8-7.6c5.6-6,6-10.4,6-10.4"/>
-                </g>
-            </svg>
-        </div>
-        <img src="assets/img/header.png" alt="">
-    </div>
-</div>
+<!--<div class="header">-->
+    <!--<div class="header-container">-->
+        <!--<div class="header-talking header-talking-outline">-->
+            <!--<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"-->
+                 <!--viewBox="0 0 64.3 65.9" enable-background="new 0 0 64.3 65.9" xml:space="preserve">-->
+                <!--<g id="ctg-talking">-->
+                    <!--<path fill="none" stroke="#7AFAA1" d="M13.4,63.4c0,0,14.9-6.1,29.4-21.6c14.5-15.5,19.1-30.3,19.1-30.3"/>-->
+                    <!--<path fill="none" stroke="#7AFAA1" d="M10.4,46.1c0,0,10-4.6,21.1-16.5C42.6,17.7,45.6,8.5,45.6,8.5"/>-->
+                    <!--<path fill="none" stroke="#7AFAA1" d="M8.4,26.5c0,0,5.2-1.6,10.8-7.6c5.6-6,6-10.4,6-10.4"/>-->
+                <!--</g>-->
+            <!--</svg>-->
+        <!--</div>-->
+        <!--<img src="assets/img/header.png" alt="">-->
+    <!--</div>-->
+<!--</div>-->
 <div class="wrapper-animation">
     <audio id="audioStory" preload="auto" muted data-load="false" data-play="false"></audio>
     <div class="timerEnd">
@@ -33,6 +33,8 @@
     <div class="startScreen">
 
     </div>
+    <div class="betterExperience">For a better experience, use a desktop in fullscreen and turn on the sound.</div>
+    <div class="launchIsActivated">launch is activated, wait for the start of the ceremony</div>
     <div class="story">
         <section id="title">
             <p>A long time ago somewhere in Cosmos...</p>
@@ -49,7 +51,9 @@
             </div>
         </section>
     </div>
-    <button type="button" class="btn-home">Play story</button>
+    <div class="launch-btn-wrapper">
+        <button type="button" class="btn-home">Launch</button>
+    </div>
     <div class="chatForStory chatAfterStory">
         <section class="title">
             <h2>Cyber Congress, Command center.</h2>
@@ -121,7 +125,7 @@
                             <p><span>signers: </span>30/92</p>
                             <p><span>stability: </span>32%</p>
                             <p><span>ABCI interface: </span>checked</p>
-                            <p><span>Consensus: </span>Tendermint 0.34</p>
+                            <p><span>consensus: </span>Tendermint 0.34</p>
                         </div>
                     </div>
                     <div class="item item3">
@@ -130,7 +134,7 @@
                         <div class="contentClip">
                             <h3>Security Controller</h3>
                             <p><span>double sign: </span>5% slash</p>
-                            <p><span>activity: </span>&#x2039; 30%/16k block = 0.1 slash</p>
+                            <p><span>activity: </span>75% / 8k blocks / 0.01% slash</p>
                         </div>
                     </div>
                     <div class="item item4">
@@ -139,6 +143,7 @@
                         <div class="contentClip">
                             <h3>Default Mode Network</h3>
                             <p><span>state: </span>ready</p>
+                            <p><span>throughts: </span>4</p>
                         </div>
                     </div>
                     <div class="item item5">
@@ -175,9 +180,9 @@
                         <div class="column column-left"></div>
                         <div class="contentClip">
                             <h3>Turing Machine</h3>
-                            <p><span>wasm machine: </span>1.0 cosmwasm</p>
-                            <p><span>max code size: </span>600kb</p>
-                            <p><span>Deployment: </span>everyone</p>
+                            <p><span>WASM machine: </span>CW 1.0.0-beta</p>
+                            <p><span>max code size: </span>1200kb</p>
+                            <p><span>deployment: </span>everyone</p>
                         </div>
                     </div>
                 </div>
@@ -197,8 +202,8 @@
                         <div class="contentClip">
                             <h3>Relevance Machine</h3>
                             <p><span>damping factor: </span>0.8</p>
-                            <p><span>calculation period: </span>5</p>
-                            <p><span>blocks tolerance: </span>0.001</p>
+                            <p><span>calculation period: </span>5 blocks</p>
+                            <p><span>tolerance: </span>0.001</p>
                         </div>
                     </div>
                 </div>
@@ -210,8 +215,8 @@
                             <h3>Nanobot Generator</h3>
                             <p><span>supply: </span>1 Peta BOOT</p>
                             <p><span>unbonding time: </span>4 days</p>
-                            <p><span>freedom rate: </span>70 %</p>
-                            <p><span>start growth rate: </span>7 %</p>
+                            <p><span>freedom rate: </span>80 %</p>
+                            <p><span>start growth rate: </span>5 %</p>
                             <p><span>max growth rate: </span>15 %</p>
                         </div>
                     </div>
@@ -279,17 +284,17 @@
     </div>
 
     <!--chatHeartBlock-->
-    <div class="chatForStory chatForBottom chatHeartBlock">
+    <div class="chatForStory chatForBottom chatHeartBlock" id="chatHeartBlock">
         <div class="content">
             <div class="column column-back"></div>
             <div class="column column-left"></div>
             <div class="contentClip">
                 <div class="dialog">
                     <div class="dialog_role">
-                        <p id="height">Height: 1</p>
-                        <p id="blockTime">Block Time: 30/10/2021, 11:40:26</p>
-                        <p id="blockHash">Block Hash: 507E9A...092253</p>
-                        <p id="numTxs">Number Of Transactions: 0</p>
+                        <p id="height">Height: </p>
+                        <p id="blockTime">Block Time: </p>
+                        <p id="blockHash">Block Hash: </p>
+                        <p id="numTxs">Number Of Transactions: </p>
                     </div>
                 </div>
             </div>
