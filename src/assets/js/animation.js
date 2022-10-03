@@ -68,7 +68,7 @@ import videoHowInstall from "@assets/media/genesis-video.mp4"
 
 import {textForAnimation} from "@assets/js/text_for_animation.js"
 
-let genesisDate = '2021-11-05T13:01:15Z';
+let genesisDate = "2022-10-03T19:32:28Z";
 let mainTl
 // let genesisDate = Date.parse(new Date(new Date().getTime()+1.3*60000).toUTCString());
 
@@ -87,37 +87,70 @@ function timerEnd() {
 
         const now = Date.parse(new Date().toUTCString());
         // const now = new Date().getTime()
-        let distanceTemp = countDown - now;
-        const distance = (distanceTemp > 0) ? countDown - now : now - countDown;
+        const distance = countDown - now;
 
-        const days = Math.floor(distance / (day)) > 9 ? Math.floor(distance / (day)) : `0${Math.floor(distance / (day))}`
-        const hours = Math.floor((distance % (day)) / (hour)) > 9 ? Math.floor((distance % (day)) / (hour)) : `0${Math.floor((distance % (day)) / (hour))}`
-        const minutes = Math.floor((distance % (hour)) / (minute)) > 9 ? Math.floor((distance % (hour)) / (minute)) : `0${Math.floor((distance % (hour)) / (minute))}`
-        const seconds = Math.floor((distance % (minute)) / second) > 9 ? Math.floor((distance % (minute)) / second) : `0${Math.floor((distance % (minute)) / second)}`
-
-        document.querySelectorAll('.timer_container').forEach(item => {
-            item.innerText = `${days} : ${hours} : ${minutes} : ${seconds}`
-        })
-
-        // if(distance == 60000){
-        //     gsap.timeline()
-        //         .to(".startScreen #genesis",{duration:1,autoAlpha:0})
-        //         .to(".startScreen",{duration:1,backgroundColor:"rgba(0,0,0,0)"},">")
-        //         .to(".btn-home",{duration:1,autoAlpha:1},"<")
-        //         .to(".startScreen svg",{duration:1,y:"-20%",ease:"sine.inOut"},"<")
-        // }
-        if (distance <= 0) {
-            clearInterval(timerInterval);
-            mainTl.restart()
-        }
+         if (distance <= 0) {
+           clearInterval(timerInterval);
+           mainTl.restart();
+         } else {
+             const days = Math.floor(distance / (day)) > 9 ? Math.floor(distance / (day)) : `0${Math.floor(distance / (day))}`
+             const hours = Math.floor((distance % (day)) / (hour)) > 9 ? Math.floor((distance % (day)) / (hour)) : `0${Math.floor((distance % (day)) / (hour))}`
+             const minutes = Math.floor((distance % (hour)) / (minute)) > 9 ? Math.floor((distance % (hour)) / (minute)) : `0${Math.floor((distance % (hour)) / (minute))}`
+             const seconds = Math.floor((distance % (minute)) / second) > 9 ? Math.floor((distance % (minute)) / second) : `0${Math.floor((distance % (minute)) / second)}`
+     
+             document.querySelectorAll('.timer_container').forEach(item => {
+                 item.innerText = `${days} : ${hours} : ${minutes} : ${seconds}`
+             })
+         }
+       
     }
 
     changeTime()
     timerInterval = setInterval(changeTime, 1000)
 }
-timerEnd()
 
-let wsUrl = "wss://rpc.bostrom.cybernode.ai/websocket";
+function timerSputnik() {
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+  const countDown = new Date(genesisDate).getTime();
+  const changeTime = () => {
+    const now = Date.parse(new Date().toUTCString());
+    // const now = new Date().getTime()
+    const distance = countDown - now;
+
+    if (distance >= 0) {
+      const days =
+        Math.floor(distance / day) > 9
+          ? Math.floor(distance / day)
+          : `0${Math.floor(distance / day)}`;
+      const hours =
+        Math.floor((distance % day) / hour) > 9
+          ? Math.floor((distance % day) / hour)
+          : `0${Math.floor((distance % day) / hour)}`;
+      const minutes =
+        Math.floor((distance % hour) / minute) > 9
+          ? Math.floor((distance % hour) / minute)
+          : `0${Math.floor((distance % hour) / minute)}`;
+      const seconds =
+        Math.floor((distance % minute) / second) > 9
+          ? Math.floor((distance % minute) / second)
+          : `0${Math.floor((distance % minute) / second)}`;
+
+      document.querySelectorAll(".timer_container").forEach((item) => {
+        item.innerText = `${days} : ${hours} : ${minutes} : ${seconds}`;
+      });
+    }
+    
+  };
+
+  changeTime();
+  timerInterval = setInterval(changeTime, 1000);
+}
+
+let wsUrl = "wss://rpc.test-pussy.cybernode.ai/websocket";
 let wsClient = null;
 let timeReConnectWS = 3000;
 let chatHeartBlockStatus = null;
@@ -154,13 +187,12 @@ const handlerMessage = (evt) => {
       numTxs,
     };
 
-    if (chatHeartBlockStatus) {
+    const curentMainTlTime = mainTl.time();
+    if (curentMainTlTime >= 1285.81 && curentMainTlTime <= 1348.57) {
       chatHeartBlockFnc(dataBlockInfo);
-    }
-
-    if (!chatHeartBlockStatus) {
+    } else {
       closeWsfnc();
-    } 
+    }
   }
 };
 
@@ -212,7 +244,6 @@ const closeWsfnc = () => {
     wsClient.removeEventListener("close", closeHandler);
     wsClient.close();
     console.log(`close WS closeWsfnc`);
-    chatHeartBlockStatus = null;
   }
 };
 
@@ -1288,7 +1319,7 @@ window.addEventListener("load",function () {
 
                     genesisDate = new Date().getTime() + (this.duration() - this.time()) * 1000
                     clearInterval(timerInterval)
-                    timerEnd()
+                    timerSputnik()
                 }
 
             })
@@ -1338,8 +1369,6 @@ window.addEventListener("load",function () {
 
             /////chatHeartBlockFnc
             .call(()=>{createConnect();},null,0)
-            .call(()=>{chatHeartBlockStatusFnc(true);},null,0)
-            .call(()=>{chatHeartBlockStatusFnc(false);},null,25)
 
         /**
          * presentationTl
@@ -1625,6 +1654,7 @@ window.addEventListener("load",function () {
             .to(".btn-home",{duration:1,autoAlpha:1},"<")
 
         document.querySelector(".btn-home").addEventListener("mousedown",function () {
+            timerEnd();
             startScreenTl.restart()
         })
     }
