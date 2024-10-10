@@ -5,7 +5,7 @@ gsap.registerPlugin(Draggable)
 
 const widthStartScree = (window.innerWidth > 0) ? window.innerWidth : screen.width
 const containerStartScreen = document.querySelector('.startScreen')
-const durationStartScreen = 8.5
+const durationStartScreen = 6.5
 let genesisTl,glitch
 
 
@@ -585,8 +585,8 @@ const startScreenTl = gsap
   .timeline({ paused: true })
   .set(".startScreen svg", { autoAlpha: 1 })
   .to(".launch-btn-wrapper", { autoAlpha: 0 })
-  .to(".betterExperience", { duration: 1, autoAlpha: 0, display: "none" })
-  .to(".launchIsActivated", { duration: 1, autoAlpha: 1 });
+  .to(".betterExperience", { duration: 1, autoAlpha: 1 })
+  .to(".launchIsActivated", { duration: 1, autoAlpha: 0, display: "none" });
 
 gsap.set('#gD, #geD > *', {scale: 0, transformOrigin: 'center'})
 gsap.set('#gL > *', {strokeDasharray: 1496, strokeDashoffset: 1496})
